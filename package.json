@@ -1,0 +1,15 @@
+{
+  "name": "dumi-rn-app",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/react-native/packager/packager.sh"
+  },
+  "author": "ielgnaw",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^0.14.8",
+    "react-native": "^0.25.1"
+  }
+}
