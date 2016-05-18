@@ -1,71 +1,55 @@
 
 
-import {StyleSheet} from 'react-native';
+import {StyleSheet,PixelRatio,Platform} from 'react-native';
 
 'use strict';
 
-var styles = StyleSheet.create({
+let Dimensions = require('Dimensions');
 
-    navigator: {flex: 1},
+let styles = StyleSheet.create({
 
+    // container: {
+    //     flex: 1,
+    //     flexDirection: 'column',
+    //     justifyContent: 'center',
+    //     alignItems: 'flex-start',
+    //     padding: 10,
+    //     backgroundColor: '#fff',
+    // },
     container: {
         flex: 1,
-        flexDirection: 'column',
+        // marginTop: (Platform.OS === 'android' ? 66 : 74),
+        marginTop: (Platform.OS === 'android' ? 33 : 32) * PixelRatio.get(),
+        height: Dimensions.get('window').height,
+    },
+
+    child: {
+        height:80,
         justifyContent: 'center',
-        alignItems: 'flex-start',
-        padding: 10,
-        backgroundColor: '#fff',
+        alignItems: 'center',
+        overflow: 'hidden',
     },
 
-    buttonText: {
-        fontSize: 18,
-        color: 'white',
-        alignSelf: 'center'
-    },
-
-    button: {
-        height: 36,
-        backgroundColor: '#48BBEC',
-        alignSelf: 'stretch',
+    title: {
+        flex: 1,
+        alignItems: 'center',
         justifyContent: 'center'
     },
 
-    saveButton: {
-        borderColor: '#48BBEC',
-        borderWidth: 1,
-        borderRadius: 8,
-    },
-
-    newButton: {
-        marginBottom: 0,
-        borderRadius: 0,
-    },
-
-    todo: {
-        marginTop: 100,
+    button: {
         flex: 1,
-        padding: 10,
-        backgroundColor: '#ffffff',
+        width: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
 
-    txt: {
-        fontSize: 18,
-        marginLeft: 5,
-        marginTop: 2,
-        color: '#222222',
+    titleText: {
+        fontSize: 20
     },
 
-    completed: {
-        color: '#cccccc'
-    },
-
-    hr: {
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        height: 1,
-        marginLeft: 0,
-        marginRight: 0,
+    buttonText: {
+        fontSize: 18
     }
-
 });
 
 module.exports = styles;
