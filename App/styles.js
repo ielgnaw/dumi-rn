@@ -18,8 +18,8 @@ let styles = StyleSheet.create({
     // },
     container: {
         flex: 1,
-        // marginTop: (Platform.OS === 'android' ? 66 : 74),
-        marginTop: (Platform.OS === 'android' ? 33 : 32) * PixelRatio.get(),
+        marginTop: (Platform.OS === 'android' ? 56 : 64),
+        // marginTop: (Platform.OS === 'android' ? 66 : 74) * PixelRatio.get(),
         height: Dimensions.get('window').height,
     },
 
@@ -49,7 +49,31 @@ let styles = StyleSheet.create({
 
     buttonText: {
         fontSize: 18
-    }
+    },
+
+    scrollView: {
+        flex: 1
+    },
+
+    row: {
+        backgroundColor: '#3a5795',
+        borderColor: 'red',
+        borderWidth: 1,
+        padding: 5,
+        margin: 5,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+    },
+
+    text: {
+        alignSelf: 'center',
+        color: '#fff',
+    },
+    scrollview: {
+        flex: 1,
+    },
 });
 
 module.exports = styles;

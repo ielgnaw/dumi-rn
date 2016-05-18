@@ -30,6 +30,7 @@ const defaultRoute = {
 class dumiApp extends Component {
     constructor() {
         super();
+        this.onRightButtonPress = this.onRightButtonPress.bind(this);
     }
 
     _renderScene(route, navigator) {
@@ -37,6 +38,10 @@ class dumiApp extends Component {
         return (
             <Component {...route.params} navigator={navigator} />
         );
+    }
+
+    onRightButtonPress() {
+        AlertIOS.alert('123');
     }
 
     _renderNavBar() {
