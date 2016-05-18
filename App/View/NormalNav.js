@@ -74,7 +74,6 @@ class NormalNav extends Component {
     }
 
     render() {
-        console.warn('render');
 
         let rows = this.state.rowData.map((row, ii) => {
           return <Row key={ii} data={row}/>;

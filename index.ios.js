@@ -17,6 +17,10 @@ import {
     AlertIOS
 } from 'react-native';
 import {NormalNav} from './App/View/NormalNav';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+
+// const myIcon = (<Icon name="navicon" size={150} color="blue" />)
 
 'use strict';
 
@@ -50,11 +54,20 @@ class dumiApp extends Component {
             LeftButton(route, navigator, index, navState) {
                 if (index > 0) {
                     return (
-                        <TouchableOpacity
-                            onPress={() => navigator.pop()}
-                            style={styles.button}>
-                            <Text style={styles.buttonText}>返回</Text>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row',justifyContent: 'center',alignItems: 'center', height: 40}}>
+                            <TouchableOpacity
+                                onPress={() => navigator.pop()}
+                                style={styles.button}>
+                                <Text style={[styles.buttonText,{left:-10}]}>
+                                    <MaterialIcon name="chevron-left" size={40} />
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => navigator.pop()}
+                                style={styles.button}>
+                                <Text style={[styles.buttonText, {left:-32}]}>返回</Text>
+                            </TouchableOpacity>
+                        </View>
                     );
                 }
                 return null;
@@ -64,6 +77,14 @@ class dumiApp extends Component {
                     return (
                         <View style={{flexDirection: 'row',justifyContent: 'center',alignItems: 'center', height: 40}}>
                             <TouchableOpacity
+                                onPress={me.onRightButtonPress}
+                                style={styles.button}>
+                                <Text style={[styles.buttonText, {height: 21,left:20}]}>
+                                    {/*<MaterialIcon name="volume-up" size={25} />*/}
+                                    <MaterialIcon name="volume-off" size={21} />
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
                                 onPress={() => {
                                     navigator.push({
                                         component: NormalNav,
@@ -71,12 +92,9 @@ class dumiApp extends Component {
                                     });
                                 }}
                                 style={styles.button}>
-                                <Text style={styles.buttonText}>1</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={me.onRightButtonPress}
-                                style={styles.button}>
-                                <Text style={styles.buttonText}>2</Text>
+                                <Text style={[styles.buttonText, {height: 18}]}>
+                                    <EvilIcon name="navicon" size={25} />
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     );
