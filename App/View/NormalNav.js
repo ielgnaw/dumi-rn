@@ -17,6 +17,8 @@ import {
 
 let styles = require('../styles');
 
+let Dimensions = require('Dimensions');
+
 const Row = React.createClass({
     _onClick: function() {
         this.props.onClick(this.props.data);
@@ -79,6 +81,16 @@ class NormalNav extends Component {
           return <Row key={ii} data={row}/>;
         });
 
+        console.warn(Dimensions.get('window').width);
+        let rightWidth = Dimensions.get('window').width - 50;
+
+        let rightStyle = {
+            backgroundColor: 'red',
+            margin: 3,
+            width: rightWidth,
+            padding:5,
+        };
+
         return (
             <View style={styles.container}>
                 {/*<View style={{
@@ -101,32 +113,17 @@ class NormalNav extends Component {
                     }
                 >
                     {/*rows*/}
-                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-start',borderWidth:1,borderColor:'#fff'}}>
-                        <View style={{left: 20,flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
-                            <Text>1111111</Text>
+                    <View style={{flex: 1,left: 0, backgroundColor: 'white'}}>
+                        <View style={{flex: 1,flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={rightStyle}>
+                                <Text>asdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasdda</Text>
+                            </View>
                         </View>
-                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
-                            <Text>222222222222222222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                        </View>
-                    </View>
-
-                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-end',width:280,borderWidth:1,borderColor:'#fff'}}>
-                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
-                            <Text>333333333333333333333333333333333333333333333333333333333333333333333333333333333333</Text>
-                        </View>
-                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
-                            <Text>4444444</Text>
-                        </View>
-                    </View>
-
-                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-start',width:280,borderWidth:1,borderColor:'#fff'}}>
-                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
-                            <Text>3333333</Text>
-                        </View>
-                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
-                            <Text>4444444444444444444444444444444444444444444444444</Text>
-                        </View>
-                    </View>
+                  </View>
                 </ScrollView>
             </View>
         );
