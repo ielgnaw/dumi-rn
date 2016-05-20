@@ -12,7 +12,8 @@ import {
     ScrollView,
     AlertIOS,
     TouchableHighlight,
-    RefreshControl
+    RefreshControl,
+    TextMeasurer
 } from 'react-native';
 
 let styles = require('../styles');
@@ -31,6 +32,32 @@ const Row = React.createClass({
                 </Text>
             </View>
         );
+    }
+});
+
+let AutosizingText = React.createClass({
+    getInitialState: function() {
+        return {
+            width: null
+        }
+    },
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.refs.view.measure((x, y, width, height) => {
+                TextMeasurer.get(this.props.children, len => {
+                    if(len < width) {
+                        this.setState({
+                            width: len
+                        });
+                    }
+                })
+            });
+        });
+    },
+
+    render() {
+        return <View ref="view" style={{backgroundColor: 'red', width: this.state.width}}><Text ref="text">{this.props.children}</Text></View>
     }
 });
 
@@ -81,15 +108,7 @@ class NormalNav extends Component {
           return <Row key={ii} data={row}/>;
         });
 
-        console.warn(Dimensions.get('window').width);
-        let rightWidth = Dimensions.get('window').width - 50;
-
-        let rightStyle = {
-            backgroundColor: 'red',
-            margin: 3,
-            width: rightWidth,
-            padding:5,
-        };
+        let rightWidth = Dimensions.get('window').width - 115;
 
         return (
             <View style={styles.container}>
@@ -113,17 +132,65 @@ class NormalNav extends Component {
                     }
                 >
                     {/*rows*/}
-                    <View style={{flex: 1,left: 0, backgroundColor: 'white'}}>
+                    {/*<View style={{flex: 1,justifyContent: 'flex-start',alignItems: 'stretch',flexDirection: 'column',backgroundColor: '#F5FCFF',}}>
+                        <View style={{flexDirection: 'row',margin: 10}}>
+                            <View style={{backgroundColor: '#eee',width: 80, height: 50}}><Text>Me</Text></View>
+                            <View style={{flex: 1,marginLeft: 10,backgroundColor:'red'}}>
+                                <Text style={{maxWidth:100}}>
+                                    asdasdasdasasdadsadsasdasda
+                                </Text>
+                            </View>
+                        </View>
+                    </View>*/}
+
+                    <View style={{flex: 1,left: 10, backgroundColor: 'white'}}>
                         <View style={{flex: 1,flexDirection: 'row',flexWrap: 'wrap'}}>
                             <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
                                 <Image style={{height:25,width:25,margin:5}}
                                     source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
                             </View>
-                            <View style={rightStyle}>
-                                <Text>asdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasddaasdasdasdadsadsasdda</Text>
+                            <View style={{backgroundColor: 'red',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>111111111111111111111111111111111111111111111111111111</Text>
                             </View>
                         </View>
-                  </View>
+                    </View>
+
+                    <View style={{flex: 1, backgroundColor: 'white'}}>
+                        <View style={{flex: 1,flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor: 'red',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{flex: 1,left: 10, backgroundColor: 'white'}}>
+                        <View style={{flex: 1,flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor: 'red',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>4</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{flex: 1, backgroundColor: 'white'}}>
+                        <View style={{flex: 1,flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor: 'red',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>3333333333333333333333333333333333333333333333333333333333333333333333</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
                 </ScrollView>
             </View>
         );
