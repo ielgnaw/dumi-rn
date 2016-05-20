@@ -21,6 +21,9 @@ let styles = StyleSheet.create({
         marginTop: (Platform.OS === 'android' ? 56 : 64),
         // marginTop: (Platform.OS === 'android' ? 66 : 74) * PixelRatio.get(),
         height: Dimensions.get('window').height,
+
+        // justifyContent: 'center',
+        // alignItems: 'center',
     },
 
     child: {

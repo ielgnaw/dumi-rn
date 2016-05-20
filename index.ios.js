@@ -35,6 +35,10 @@ class dumiApp extends Component {
     constructor() {
         super();
         this.onRightButtonPress = this.onRightButtonPress.bind(this);
+        this.toggleMute = this.toggleMute.bind(this);
+        this.state = {
+            isMute: 0
+        };
     }
 
     _renderScene(route, navigator) {
@@ -48,6 +52,10 @@ class dumiApp extends Component {
         AlertIOS.alert('123');
     }
 
+    toggleMute() {
+        this.setState({isMute: !this.state.isMute});
+    }
+
     _renderNavBar() {
         let me = this;
         let routeMapper = {
@@ -59,7 +67,7 @@ class dumiApp extends Component {
                                 onPress={() => navigator.pop()}
                                 style={styles.button}>
                                 <Text style={[styles.buttonText,{left:-10}]}>
-                                    <MaterialIcon name="chevron-left" size={40} />
+                                    <MaterialIcon name='chevron-left' size={40} />
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -74,14 +82,14 @@ class dumiApp extends Component {
             },
             RightButton(route, navigator, index, navState) {
                 if (index === 0) {
+                    var volumeIconStr = me.state.isMute ? 'volume-off' : 'volume-up';
                     return (
                         <View style={{flexDirection: 'row',justifyContent: 'center',alignItems: 'center', height: 40}}>
                             <TouchableOpacity
-                                onPress={me.onRightButtonPress}
+                                // onPress={me.onRightButtonPress}
                                 style={styles.button}>
                                 <Text style={[styles.buttonText, {height: 21,left:20}]}>
-                                    {/*<MaterialIcon name="volume-up" size={25} />*/}
-                                    <MaterialIcon name="volume-off" size={21} />
+                                    <MaterialIcon name={volumeIconStr} size={21} onPress={me.toggleMute}/>
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -93,7 +101,7 @@ class dumiApp extends Component {
                                 }}
                                 style={styles.button}>
                                 <Text style={[styles.buttonText, {height: 18}]}>
-                                    <EvilIcon name="navicon" size={25} />
+                                    <EvilIcon name="navicon" size={25}/>
                                 </Text>
                             </TouchableOpacity>
                         </View>

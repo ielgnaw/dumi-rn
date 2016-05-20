@@ -100,7 +100,33 @@ class NormalNav extends Component {
                         />
                     }
                 >
-                  {rows}
+                    {/*rows*/}
+                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-start',borderWidth:1,borderColor:'#fff'}}>
+                        <View style={{left: 20,flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
+                            <Text>1111111</Text>
+                        </View>
+                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
+                            <Text>222222222222222222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                        </View>
+                    </View>
+
+                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-end',width:280,borderWidth:1,borderColor:'#fff'}}>
+                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
+                            <Text>333333333333333333333333333333333333333333333333333333333333333333333333333333333333</Text>
+                        </View>
+                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
+                            <Text>4444444</Text>
+                        </View>
+                    </View>
+
+                    <View style={{flexDirection:'column', justifyContent:'flex-start', alignItems:'flex-start',width:280,borderWidth:1,borderColor:'#fff'}}>
+                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10}}>
+                            <Text>3333333</Text>
+                        </View>
+                        <View style={{flex:0,backgroundColor:'red',padding:10,borderRadius:10,marginTop:20}}>
+                            <Text>4444444444444444444444444444444444444444444444444</Text>
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
         );
