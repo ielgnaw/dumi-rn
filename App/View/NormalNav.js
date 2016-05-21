@@ -18,11 +18,11 @@ import {
     DeviceEventEmitter
 } from 'react-native';
 
-import ReactNative from 'react-native';
-
 let styles = require('../styles');
 
 let Dimensions = require('Dimensions');
+
+var RCTUIManager = require('NativeModules').UIManager;
 
 const Row = React.createClass({
     _onClick: function() {
@@ -64,6 +64,8 @@ let AutosizingText = React.createClass({
         return <View ref="view" style={{backgroundColor: 'red', width: this.state.width}}><Text ref="text">{this.props.children}</Text></View>
     }
 });
+
+let _scrollToBottomY;
 
 class NormalNav extends Component {
 
@@ -120,15 +122,17 @@ class NormalNav extends Component {
         }, 3000);
     }
 
-    inputFocused(refName) {
-        setTimeout(() => {
-            let scrollResponder = this.refs.scrollView.getScrollResponder();
-            scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
-                ReactNative.findNodeHandle(this.refs[refName]),
-                110, //additionalOffset
-                true
-            );
-        }, 50);
+    testFocus() {
+        let sv = this.refs.scrollView;
+        RCTUIManager.measure(
+            sv.getInnerViewNode(), (...data) => {
+                sv.scrollTo({
+                    x: 0,
+                    y: data[3] - Dimensions.get('window').height / 2 + 20,
+                    animated: true
+                });
+            }
+        );
     }
 
     render() {
@@ -143,18 +147,13 @@ class NormalNav extends Component {
 
         return (
             <View style={[styles.container, {}]}>
-                {/*<View style={{
-                    flex: -1,
-                    backgroundColor: '#0f0',
-                    borderColor: '#0f0',
-                    borderRadius: 30,
-                    borderWidth: 1
-                }}>
-                    <Text style={{color:'red',}}>asdasd</Text>
-                </View>*/}
                 <ScrollView style={[styles.scrollView, {}]}
                     keyboardShouldPersistTaps={false}
                     ref="scrollView"
+                    keyboardDismissMode="on-drag"
+                    onScroll={() => {
+                        // console.warn(this.refs.scrollView.getMetrics);
+                    }}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.isRefreshing}
@@ -162,226 +161,303 @@ class NormalNav extends Component {
                             colors={['#ff0000', '#00ff00', '#0000ff','#3ad564']}
                             progressBackgroundColor="#ffffff"
                         />
-                    }
-                >
-                    {/*rows*/}
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
+                    }>
 
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                    <View onLayout={(e)=> {
+                        _scrollToBottomY = e.nativeEvent.layout.y;
+                    }}>
+                        {/*rows*/}
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        1111111111111111111111111111111111111111111111111111111111111111
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>1111111111111111111111111111111111111111111111111111111111111111</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
 
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        222222222222222222222222222222222222222222222222222222222222222222222222
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>222222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
 
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        333333333333333333333333333333333333333333333333333333333333333333333333
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>333333333333333333333333333333333333333333333333333333333333333333333333</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
 
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        4444444444444444444444444444444444444444444444444444444444444444444444
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>4444444444444444444444444444444444444444444444444444444444444444444444</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
 
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        555555555555555555555555555555555555555555555555555555555555555555555555
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>555555555555555555555555555555555555555555555555555555555555555555555555</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
 
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        666666666666666666666666666666666666666666666666666666666666666666666666666
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>666666666666666666666666666666666666666666666666666666666666666666666666666</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        777777777777777777777777777777777777777777777777777777777777777777777777
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>777777777777777777777777777777777777777777777777777777777777777777777777</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        888888888888888888888888888888888888888888888888888888888888888888888888
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>888888888888888888888888888888888888888888888888888888888888888888888888</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        999999999999999999999999999999999999999999999999999999999999999999999999
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>999999999999999999999999999999999999999999999999999999999999999999999999</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        00000000000000000000000000000000000000000000000000000000000000000
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>00000000000000000000000000000000000000000000000000000000000000000</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{left: 10}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                                </View>
+                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={{}}>
+                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                    <Text>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text>
+                                </View>
+                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                    <Image style={{height:25,width:25,margin:5}}
+                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                                </View>
+                            </View>
+                        </View>
+
+                    </View>
                 </ScrollView>
 
                 <TextInput
                     style={{bottom: this.state.btnLocation,height:37,fontSize: 12,color:'#aaa',paddingHorizontal:15,paddingVertical:6,borderColor: 'gray', borderWidth: 1}}
-                    autoCapitalize = "none"
+                    autoCapitalize="none"
                     autoCorrect={false}
-                    multiline = {true}
-                    keyboardType = "default"
+                    multiline={true}
+                    keyboardType="default"
                     ref='textInput'
-                    placeholder = "请输入手机号或邮箱"
-                    placeholderTextColor = "#999"
+                    placeholder="请输入手机号或邮箱"
+                    placeholderTextColor="#999"
                     onChangeText={(text) => this.setState({text})}
+                    onFocus={() => this.testFocus()}
                 >
                 </TextInput>
-                {/*<TextInput
-                    style={{bottom: this.state.btnLocation,height: 40, borderColor: 'gray', borderWidth: 1}}
-                    onChangeText={(text) => this.setState({text})}
-                    value={this.state.text}
-                  />*/}
             </View>
         );
     }
