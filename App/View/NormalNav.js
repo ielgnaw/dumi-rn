@@ -15,6 +15,7 @@ import {
     RefreshControl,
     TextMeasurer,
     TextInput,
+    DeviceEventEmitter
 } from 'react-native';
 
 import ReactNative from 'react-native';
@@ -73,8 +74,22 @@ class NormalNav extends Component {
         this.state = {
             isRefreshing: false,
             rowData: Array.from(new Array(20)).map((val, i) => ({text: '初始行 ' + i})),
-            loaded: 0
+            loaded: 0,
+            btnLocation: 0
         };
+    }
+
+    componentWillMount() {
+        DeviceEventEmitter.addListener('keyboardWillShow', this.keyboardWillShow.bind(this))
+        DeviceEventEmitter.addListener('keyboardWillHide', this.keyboardWillHide.bind(this))
+    }
+
+    keyboardWillShow(e) {
+        this.setState({btnLocation: e.endCoordinates.height})
+    }
+
+    keyboardWillHide(e) {
+        this.setState({btnLocation: 0})
     }
 
     alertMenu() {
@@ -127,7 +142,7 @@ class NormalNav extends Component {
         let me = this;
 
         return (
-            <View style={[styles.container, {height: 10}]}>
+            <View style={[styles.container, {}]}>
                 {/*<View style={{
                     flex: -1,
                     backgroundColor: '#0f0',
@@ -137,7 +152,7 @@ class NormalNav extends Component {
                 }}>
                     <Text style={{color:'red',}}>asdasd</Text>
                 </View>*/}
-                <ScrollView style={styles.scrollView}
+                <ScrollView style={[styles.scrollView, {}]}
                     keyboardShouldPersistTaps={false}
                     ref="scrollView"
                     refreshControl={
@@ -163,7 +178,131 @@ class NormalNav extends Component {
                             </View>
                         </View>
                     </View>
+                    <View style={{}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                            </View>
+                        </View>
+                    </View>
 
+                    <View style={{left: 10}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{left: 10}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{left: 10}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{left: 10}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={{}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
+                            </View>
+                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{left: 10}}>
+                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
+                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
+                                <Image style={{height:25,width:25,margin:5}}
+                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
+                            </View>
+                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
+                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
+                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                     <View style={{}}>
                         <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
                             <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
@@ -188,7 +327,6 @@ class NormalNav extends Component {
                             </View>
                         </View>
                     </View>
-
                     <View style={{}}>
                         <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
                             <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
@@ -213,82 +351,6 @@ class NormalNav extends Component {
                             </View>
                         </View>
                     </View>
-
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    <View style={{}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text>2222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                            </View>
-                            <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={{left: 10}}>
-                        <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                            <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                <Image style={{height:25,width:25,margin:5}}
-                                    source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                            </View>
-                            <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                    短纤维发但是三点发格瑞特让人头二七区去恶趣味去恶趣味去问切去
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-
                     <View style={{}}>
                         <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
                             <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
@@ -301,26 +363,25 @@ class NormalNav extends Component {
                         </View>
                     </View>
 
-                    <TextInput
-                        style={{height:37,fontSize: 12,color:'#aaa',paddingHorizontal:15,paddingVertical:6,borderColor: 'gray', borderWidth: 1}}
-                        autoCapitalize = "none"
-                        autoCorrect={false}
-                        multiline = {true}
-                        keyboardType = "default"
-                        ref='textInput'
-                        placeholder = "请输入手机号或邮箱"
-                        placeholderTextColor = "#999"
-                        onFocus={me.inputFocused.bind(me, 'textInput')}
-                    >
-                    </TextInput>
                 </ScrollView>
 
+                <TextInput
+                    style={{bottom: this.state.btnLocation,height:37,fontSize: 12,color:'#aaa',paddingHorizontal:15,paddingVertical:6,borderColor: 'gray', borderWidth: 1}}
+                    autoCapitalize = "none"
+                    autoCorrect={false}
+                    multiline = {true}
+                    keyboardType = "default"
+                    ref='textInput'
+                    placeholder = "请输入手机号或邮箱"
+                    placeholderTextColor = "#999"
+                    onChangeText={(text) => this.setState({text})}
+                >
+                </TextInput>
                 {/*<TextInput
-                    style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                    style={{bottom: this.state.btnLocation,height: 40, borderColor: 'gray', borderWidth: 1}}
                     onChangeText={(text) => this.setState({text})}
                     value={this.state.text}
                   />*/}
-
             </View>
         );
     }
