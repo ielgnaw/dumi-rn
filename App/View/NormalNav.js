@@ -39,32 +39,6 @@ const Row = React.createClass({
     }
 });
 
-let AutosizingText = React.createClass({
-    getInitialState: function() {
-        return {
-            width: null
-        }
-    },
-
-    componentDidMount() {
-        setTimeout(() => {
-            this.refs.view.measure((x, y, width, height) => {
-                TextMeasurer.get(this.props.children, len => {
-                    if (len < width) {
-                        this.setState({
-                            width: len
-                        });
-                    }
-                })
-            });
-        });
-    },
-
-    render() {
-        return <View ref="view" style={{backgroundColor: 'red', width: this.state.width}}><Text ref="text">{this.props.children}</Text></View>
-    }
-});
-
 let _scrollToBottomY;
 
 class NormalNav extends Component {
@@ -150,7 +124,7 @@ class NormalNav extends Component {
                 <ScrollView style={[styles.scrollView, {}]}
                     keyboardShouldPersistTaps={false}
                     ref="scrollView"
-                    keyboardDismissMode="on-drag"
+                    keyboardDismissMode="interactive"
                     onScroll={() => {
                         // console.warn(this.refs.scrollView.getMetrics);
                     }}
@@ -163,9 +137,7 @@ class NormalNav extends Component {
                         />
                     }>
 
-                    <View onLayout={(e)=> {
-                        _scrollToBottomY = e.nativeEvent.layout.y;
-                    }}>
+                    <View>
                         {/*rows*/}
                         <View style={{left: 10}}>
                             <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
