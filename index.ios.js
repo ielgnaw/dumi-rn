@@ -62,18 +62,18 @@ class dumiApp extends Component {
             LeftButton(route, navigator, index, navState) {
                 if (index > 0) {
                     return (
-                        <View style={{flexDirection: 'row',justifyContent: 'center',alignItems: 'center', height: 40}}>
+                        <View style={[styles.leftNav, {}]}>
                             <TouchableOpacity
                                 onPress={() => navigator.pop()}
-                                style={styles.button}>
-                                <Text style={[styles.buttonText,{left:-10}]}>
+                                style={styles.navButton}>
+                                <Text style={[styles.navButtonText,{left: -10}]}>
                                     <MaterialIcon name='chevron-left' size={40} />
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => navigator.pop()}
-                                style={styles.button}>
-                                <Text style={[styles.buttonText, {left:-32}]}>返回</Text>
+                                style={styles.navButton}>
+                                <Text style={[styles.navButtonText, {left:-32}]}>返回</Text>
                             </TouchableOpacity>
                         </View>
                     );
@@ -84,11 +84,11 @@ class dumiApp extends Component {
                 if (index === 0) {
                     var volumeIconStr = me.state.isMute ? 'volume-off' : 'volume-up';
                     return (
-                        <View style={{flexDirection: 'row',justifyContent: 'center',alignItems: 'center', height: 40}}>
+                        <View style={[styles.rightNav, {}]}>
                             <TouchableOpacity
                                 // onPress={me.onRightButtonPress}
-                                style={styles.button}>
-                                <Text style={[styles.buttonText, {height: 21,left:20}]}>
+                                style={styles.navButton}>
+                                <Text style={[styles.navButtonText, {height: 21,left:20}]}>
                                     <MaterialIcon name={volumeIconStr} size={21} onPress={me.toggleMute}/>
                                 </Text>
                             </TouchableOpacity>
@@ -99,8 +99,8 @@ class dumiApp extends Component {
                                         title: '度秘设置'
                                     });
                                 }}
-                                style={styles.button}>
-                                <Text style={[styles.buttonText, {height: 18}]}>
+                                style={styles.navButton}>
+                                <Text style={[styles.navButtonText, {height: 18}]}>
                                     <EvilIcon name="navicon" size={25}/>
                                 </Text>
                             </TouchableOpacity>
@@ -111,8 +111,8 @@ class dumiApp extends Component {
             },
             Title(route, navigator, index, navState) {
                 return (
-                    <View style={styles.title}>
-                        <Text style={[styles.titleText, ]}>{route.title ? route.title : 'Splash'}</Text>
+                    <View style={styles.navTitle}>
+                        <Text style={[styles.navTitleText, ]}>{route.title ? route.title : 'Splash'}</Text>
                     </View>
                 );
             }

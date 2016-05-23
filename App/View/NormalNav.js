@@ -22,24 +22,55 @@ let styles = require('../styles');
 
 let Dimensions = require('Dimensions');
 
-var RCTUIManager = require('NativeModules').UIManager;
+let RCTUIManager = require('NativeModules').UIManager;
 
-const Row = React.createClass({
-    _onClick: function() {
-        this.props.onClick(this.props.data);
-    },
-    render: function() {
+const leftAvatar = ''
+    + 'http://b.hiphotos.baidu.com/baike/s%3D235/'
+    + 'sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg';
+
+const rightAvatar = 'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png';
+
+const height = Dimensions.get('window').height;
+
+let distance = 0;
+
+class LeftDialog extends Component {
+    render() {
         return (
-            <View style={styles.row}>
-                <Text style={styles.text}>
-                    {this.props.data.text}
-                </Text>
+            <View style={[styles.leftDialogWarp, {}]}>
+                <View style={[styles.leftDialog, {}]}>
+                    <View style={[styles.leftDialogAvatarWrap, {}]}>
+                        <Image style={[styles.leftDialogAvatar, {}]}
+                            source={{uri: leftAvatar}}></Image>
+                    </View>
+                    <View style={[styles.leftDialogContentWrap, {width: this.props.width}]}>
+                        <Text style={[styles.leftDialogText, {}]}>
+                            {this.props.content}
+                        </Text>
+                    </View>
+                </View>
             </View>
         );
     }
-});
+}
 
-let _scrollToBottomY;
+class RightDialog extends Component {
+    render() {
+        return (
+            <View style={[styles.rightDialogWarp, {}]}>
+                <View style={[styles.rightDialogContentWrap, {width: this.props.width}]}>
+                    <Text style={[styles.rightDialogText, {}]}>
+                        {this.props.content}
+                    </Text>
+                </View>
+                <View style={[styles.rightDialogAvatarWrap, {}]}>
+                    <Image style={[styles.rightDialogAvatar, {}]}
+                        source={{uri: rightAvatar}}></Image>
+                </View>
+            </View>
+        );
+    }
+}
 
 class NormalNav extends Component {
 
@@ -49,9 +80,9 @@ class NormalNav extends Component {
         this._onRefresh = this._onRefresh.bind(this);
         this.state = {
             isRefreshing: false,
-            rowData: Array.from(new Array(20)).map((val, i) => ({text: '初始行 ' + i})),
             loaded: 0,
-            btnLocation: 0
+            btnLocation: 0,
+            refreshData: []
         };
     }
 
@@ -84,14 +115,14 @@ class NormalNav extends Component {
     _onRefresh() {
         this.setState({isRefreshing: true});
         setTimeout(() => {
-            // 准备下拉刷新的5条数据
-            const rowData = Array.from(new Array(5)).map((val, i) => ({
-                text: '刷新行 ' + (+this.state.loaded + i)
-            })).concat(this.state.rowData);
+            let refreshData = Array.from(new Array(5)).map((val, i) => ({
+                content: '刷新行 ' + (+this.state.loaded + i)
+            })).concat(this.state.refreshData);
             this.setState({
                 loaded: this.state.loaded + 5,
                 isRefreshing: false,
-                rowData: rowData,
+                btnLocation: this.state.btnLocation,
+                refreshData: refreshData,
             });
         }, 3000);
     }
@@ -100,24 +131,46 @@ class NormalNav extends Component {
         let sv = this.refs.scrollView;
         RCTUIManager.measure(
             sv.getInnerViewNode(), (...data) => {
-                sv.scrollTo({
-                    x: 0,
-                    y: data[3] - Dimensions.get('window').height / 2 + 20,
-                    animated: true
-                });
+                if (data[3] > height / 2 - 20) {
+                    sv.scrollTo({
+                        x: 0,
+                        y: data[3] - height / 2 + 20,
+                        animated: true
+                    });
+                    distance = data[3] - height / 2 + 20;
+                }
+            }
+        );
+    }
+
+    testBlur() {
+        let sv = this.refs.scrollView;
+        // console.warn(sv.getInnerViewNode(), 'dd');
+        RCTUIManager.measure(
+            sv.getInnerViewNode(), (...data) => {
+                // console.warn(data);
+                // console.warn(distance);
+                // if (data[3] > height / 2 - 20) {
+                    sv.scrollTo({
+                        x: 0,
+                        y: 0,
+                        animated: true
+                    });
+                // }
             }
         );
     }
 
     render() {
-
-        let rows = this.state.rowData.map((row, ii) => {
-          return <Row key={ii} data={row}/>;
-        });
-
         let rightWidth = Dimensions.get('window').width - 115;
-
-        let me = this;
+        let refreshData = this.state.refreshData.map((row, i) => {
+            return (
+                <View key={i}>
+                    <LeftDialog content={row.content} width={rightWidth}/>
+                    <RightDialog content={row.content} width={rightWidth}/>
+                </View>
+            );
+        });
 
         return (
             <View style={[styles.container, {}]}>
@@ -125,9 +178,6 @@ class NormalNav extends Component {
                     keyboardShouldPersistTaps={false}
                     ref="scrollView"
                     keyboardDismissMode="interactive"
-                    onScroll={() => {
-                        // console.warn(this.refs.scrollView.getMetrics);
-                    }}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.isRefreshing}
@@ -138,282 +188,14 @@ class NormalNav extends Component {
                     }>
 
                     <View>
-                        {/*rows*/}
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        1111111111111111111111111111111111111111111111111111111111111111
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>1111111111111111111111111111111111111111111111111111111111111111</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
+                        {refreshData}
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
 
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        222222222222222222222222222222222222222222222222222222222222222222222222
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>222222222222222222222222222222222222222222222222222222222222222222222222</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
 
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        333333333333333333333333333333333333333333333333333333333333333333333333
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>333333333333333333333333333333333333333333333333333333333333333333333333</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        4444444444444444444444444444444444444444444444444444444444444444444444
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>4444444444444444444444444444444444444444444444444444444444444444444444</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        555555555555555555555555555555555555555555555555555555555555555555555555
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>555555555555555555555555555555555555555555555555555555555555555555555555</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        666666666666666666666666666666666666666666666666666666666666666666666666666
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>666666666666666666666666666666666666666666666666666666666666666666666666666</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        777777777777777777777777777777777777777777777777777777777777777777777777
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>777777777777777777777777777777777777777777777777777777777777777777777777</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        888888888888888888888888888888888888888888888888888888888888888888888888
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>888888888888888888888888888888888888888888888888888888888888888888888888</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        999999999999999999999999999999999999999999999999999999999999999999999999
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>999999999999999999999999999999999999999999999999999999999999999999999999</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        00000000000000000000000000000000000000000000000000000000000000000
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>00000000000000000000000000000000000000000000000000000000000000000</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View style={{left: 10}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://b.hiphotos.baidu.com/baike/s%3D235/sign=7062923d504e9258a23481eda983d1d1/c2fdfc039245d688ad7ec8fda2c27d1ed21b246e.jpg'}}></Image>
-                                </View>
-                                <View style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text style={{lineHeight:20,paddingLeft:5,paddingRight:5,paddingBottom:5}}>
-                                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{}}>
-                            <View style={{flexDirection: 'row',flexWrap: 'wrap'}}>
-                                <View style={{left: 53,backgroundColor:'#fff',borderWidth:1,borderColor:'#e0e0e0',margin: 3,width: rightWidth,padding:5}}>
-                                    <Text>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text>
-                                </View>
-                                <View style={{left:53,margin: 3,borderWidth:1,borderColor:'#e8e8e8',borderRadius:18, height:38}}>
-                                    <Image style={{height:25,width:25,margin:5}}
-                                        source={{uri:'http://boscdn.bpc.baidu.com/mms-res/ielgnaw/1.png'}}></Image>
-                                </View>
-                            </View>
-                        </View>
-
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
                     </View>
                 </ScrollView>
 
@@ -428,6 +210,7 @@ class NormalNav extends Component {
                     placeholderTextColor="#999"
                     onChangeText={(text) => this.setState({text})}
                     onFocus={() => this.testFocus()}
+                    onBlur={() => this.testBlur()}
                 >
                 </TextInput>
             </View>
