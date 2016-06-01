@@ -20,7 +20,7 @@ let styles = StyleSheet.create({
         flex: 1,
         marginTop: (Platform.OS === 'android' ? 56 : 64),
         // marginTop: (Platform.OS === 'android' ? 66 : 74) * PixelRatio.get(),
-        height: Dimensions.get('window').height
+        height: Dimensions.get('window').height,
     },
 
     leftNav: {
@@ -59,7 +59,9 @@ let styles = StyleSheet.create({
     },
 
     scrollView: {
-        flex: 1
+        flex: 1,
+        marginBottom: 10,
+        paddingTop: 10
     },
 
     leftDialogWarp: {

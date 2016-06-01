@@ -18,6 +18,10 @@ import {
     DeviceEventEmitter
 } from 'react-native';
 
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+var AutoExpandingTextInput = require('react-native-auto-expanding-textinput');
+
 let styles = require('../styles');
 
 let Dimensions = require('Dimensions');
@@ -82,7 +86,8 @@ class NormalNav extends Component {
             isRefreshing: false,
             loaded: 0,
             btnLocation: 0,
-            refreshData: []
+            refreshData: [],
+            height: 40
         };
     }
 
@@ -134,10 +139,10 @@ class NormalNav extends Component {
                 if (data[3] > height / 2 - 20) {
                     sv.scrollTo({
                         x: 0,
-                        y: data[3] - height / 2 + 20,
+                        y: data[3] - height / 2 + 50,
                         animated: true
                     });
-                    distance = data[3] - height / 2 + 20;
+                    distance = data[3] - height / 2 + 50;
                 }
             }
         );
@@ -159,6 +164,10 @@ class NormalNav extends Component {
                 // }
             }
         );
+    }
+    _onChangeHeight(before, after) {
+        console.warn('_onChangeHeight');
+        this.setState({height: Math.ceil(after)});
     }
 
     render() {
@@ -195,24 +204,92 @@ class NormalNav extends Component {
                         <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
                         <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
 
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
+                        <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
+
+                        <LeftDialog content="asdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsadsasdadsads" width={rightWidth}/>
                         <RightDialog content="asdasdasdasasdsadasdadsdsadsads" width={rightWidth}/>
                     </View>
                 </ScrollView>
 
-                <TextInput
-                    style={{bottom: this.state.btnLocation,height:37,fontSize: 12,color:'#aaa',paddingHorizontal:15,paddingVertical:6,borderColor: 'gray', borderWidth: 1}}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    multiline={true}
-                    keyboardType="default"
-                    ref='textInput'
-                    placeholder="请输入手机号或邮箱"
-                    placeholderTextColor="#999"
-                    onChangeText={(text) => this.setState({text})}
-                    onFocus={() => this.testFocus()}
-                    onBlur={() => this.testBlur()}
-                >
-                </TextInput>
+                <View style={{
+                    flexDirection: 'row',
+                    height: this.state.height + 15,
+                    bottom: this.state.btnLocation,
+                    backgroundColor:'#eaeae8',
+                    borderTopColor: '#dee0da',
+                    borderTopWidth: 1,
+                    borderBottomColor: '#dee0da',
+                    borderBottomWidth: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    <View style={{
+                        width: 50,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        <MaterialIcon name="volume-off" size={25} style={{
+                            color: '#676d6e',
+                        }}/>
+                    </View>
+
+                    <View style={{
+                        flex: 1,
+                        backgroundColor: '#fff',
+                        height: this.state.height,
+                        borderColor: '#d7d9d3',
+                        borderWidth: 1,
+                    }}>
+                        <AutoExpandingTextInput
+                            style={{fontSize: 15}}
+                            underlineColorAndroid = {'transparent'}
+                            enablesReturnKeyAutomatically={true}
+                            returnKeyType={'send'}
+                            minHeight={40}
+                            maxHeight={200}
+                            onChangeHeight={(before, after) => this._onChangeHeight(before, after)}
+                            onChangeText={(text) => this.setState({text})}
+                            onFocus={() => this.testFocus()}
+                            onBlur={() => this.testBlur()}
+                            ref='textInput'
+                        ></AutoExpandingTextInput>
+                    </View>
+
+                    <View style={{
+                        width: 70,
+                        flexDirection: 'row',
+                        marginLeft: 10
+                    }}>
+                        <MaterialIcon name="volume-off" size={25} style={{
+                            color: '#676d6e',
+                            marginRight: 10
+                        }}/>
+                        <MaterialIcon name="volume-off" size={25} style={{
+                            color: '#676d6e',
+                            marginRight: 10
+                        }}/>
+                    </View>
+                </View>
+
             </View>
         );
     }
